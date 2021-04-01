@@ -54,7 +54,7 @@ class JournalTable extends Component {
       </tr>
       </thead>
       <tbody>
-      {this.props.students.map((student, index) => {
+      {this.props.student.map((student, index) => {
         return <tr>
           <td>{index + 1}</td>
           <td>{student.name}</td>
