@@ -17,10 +17,6 @@ public class StudentJdbc {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Student> getAllLocal() {
-        return jdbcTemplate.query("SELECT * FROM student_local", this::mapStudent);
-    }
-
     //  Просмотр студента
     public Student get(int id){
         String sql = "SELECT * FROM STUDENT WHERE id = ?";
@@ -39,36 +35,40 @@ public class StudentJdbc {
         return jdbcTemplate.query(sql, this::mapStudent);
     }
 
-    //  Создание студента
-    public void CreateStudent(int id, String surname, String name, String second_name) {
-        this.jdbcTemplate.update(
-                "INSERT INTO STUDENT VALUES(?, ?, ?, ?)",
-                id, surname, name,second_name);
+    public List<Student> getAllLocal(){
+        String sql = "SELECT * FROM STUDENT_LOCAL";
+        return jdbcTemplate.query(sql, this::mapStudent);
     }
 
-    public void CreateStudent(Student student) {
-        this.jdbcTemplate.update(
-                "INSERT INTO STUDENT VALUES(?, ?, ?, ?)",
+    //  Создание студента
+    public int CreateStudent(int id, String surname, String name, String second_name, int study_group_id) {
+        return jdbcTemplate.update(
+                "INSERT INTO STUDENT VALUES(?, ?, ?, ?, ?)",
+                id, surname, name,second_name, study_group_id);
+    }
+
+    public int CreateStudent(Student student) {
+        return jdbcTemplate.update(
+                "INSERT INTO STUDENT VALUES(?, ?, ?, ?, ?)",
                 student.getId(), student.getSurname(),
-                student.getName(),student.getSecond_name());
+                student.getName(),student.getSecondName(),
+                student.getStudy_group_id());
     }
 
     //  Редактирование студента
-    public void UpdateStudent(int id, String surname, String name, String second_name) {
-        this.jdbcTemplate.update(
-                "MERGE INTO CUSTOMER KEY (ID) VALUES (?, ?, ?, ?)",
-                id, surname, name,second_name);
+    public int UpdateStudent(int id, String surname, String name, String second_name, int study_group_id) {
+        return jdbcTemplate.update(
+                "MERGE INTO STUDENT KEY (ID) VALUES (?, ?, ?, ?, ?)",
+                id, surname, name,second_name, study_group_id);
 
     }
 
     public int UpdateStudent(Student student) {
-        int status = jdbcTemplate.update("UPDATE STUDENT SET VALUES(?, ?, ?, ?)",
+        return jdbcTemplate.update(
+                "MERGE INTO STUDENT KEY (ID) VALUES (?, ?, ?, ?, ?)",
                 student.getId(), student.getSurname(),
-                student.getName(),student.getSecond_name());
-        if(status == 0){
-            CreateStudent(student);
-        }
-        return status;
+                student.getName(),student.getSecondName(),
+                student.getStudy_group_id());
     }
 
 
@@ -77,12 +77,13 @@ public class StudentJdbc {
                 rs.getInt("id"),
                 rs.getString("surname"),
                 rs.getString("name"),
-                rs.getString("second_name")
+                rs.getString("second_name"),
+                rs.getInt("study_group_id")
         );
     }
 
     //  Удаление студента
-    public int delete(String id) {
+    public int delete(Integer id) {
         return jdbcTemplate.update("DELETE FROM STUDENT WHERE id = ?", id);
     }
 
